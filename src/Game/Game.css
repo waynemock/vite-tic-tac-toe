@@ -1,0 +1,42 @@
+
+.board-row:after {
+  clear: both;
+  content: '';
+  display: table;
+}
+
+.footer {
+  padding: 1em;
+  font-weight: bold;
+}
+
+.game {
+  display: flex;
+  flex-direction: row;
+}
+
+.game-info {
+  min-width: 320px;
+  margin-left: 20px;
+  text-align: left;
+}
+
+.header {
+  padding: 1em;
+  font-size: large;
+  font-weight: bold;
+}
+
+.highlight {
+  color: #646cff;
+  text-decoration: inherit;
+}
+
+.square {
+  border: solid;
+  font-size: 4em;
+  margin-right: -1px;
+  margin-top: -1px;
+  min-width: 90px;
+  min-height: 90px;
+}
