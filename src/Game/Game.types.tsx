@@ -1,8 +1,11 @@
-import { BoardGrid } from './Board.types';
+import {
+  BoardGrid,
+  BoardGridItemIndex,
+} from './Board/Board.types';
 
 export type GameHistoryItem = {
   board: BoardGrid;
-  playedSquare: number;
+  playedSquare?: BoardGridItemIndex;
 };
 
 export type GameHistory = Array<GameHistoryItem>;

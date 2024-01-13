@@ -1,50 +1,58 @@
+import { cloneDeep } from 'lodash';
 import './Game.css'
 import {
   FunctionComponent,
-  useMemo,
+  useEffect,
   useState,
 } from 'react';
-import { Board } from './Board.component';
+import { Board } from './Board/Board.component';
 import { GameHistory } from './Game.types';
-import { BoardGrid } from './Board.types';
+import { BoardGrid, BoardGridItemIndex } from './Board/Board.types';
+import { History } from './History/History.component';
+import { gameConstants } from './Game.constants';
+import { GridSizeSelect } from './GridSizeSelect/GridSizeSelect.component';
+import { gameUtils } from './utils';
 
 export const Game: FunctionComponent = () => {
-  const [history, setHistory] = useState<GameHistory>([{ board: [], playedSquare: -1}]);
+  const [gridSize, setGridSize] = useState(gameConstants.defaultGridSize);
+  const [history, setHistory] = useState<GameHistory>([{ board: gameUtils.initBoard(gridSize)}]);
   const [currentTurn, setCurrentTurn] = useState(0);
 
-  const takeTurn = (newBoard: BoardGrid, square: number) => {
-    setHistory([...history.slice(0, currentTurn + 1), {
-      board: newBoard,
+  useEffect(() => {
+    if (gridSize !== history[0].board.length) {
+      setCurrentTurn(0);
+      setHistory([{ board: gameUtils.initBoard(gridSize)}])
+    }
+  }, [gridSize, history]);
+
+  const takeTurn = (newBoard: BoardGrid, square: BoardGridItemIndex) => {
+    const newHistory = cloneDeep(history.slice(0, currentTurn + 1));
+    setHistory([...newHistory, {
+      board: cloneDeep(newBoard),
       playedSquare: square,
     }]);
     setCurrentTurn(currentTurn + 1);
   }
 
-  const historyList = useMemo(() => history.map((item, index) => {
-    const className = currentTurn === index ? 'highlight' : '';
-    const player = index % 2 ? 'X' : 'O';
-    const turn = `${player} played (${(Math.floor(item.playedSquare / 3)) + 1}, ${(item.playedSquare % 3) + 1})`;
-
-    let label = 'Restart game';
-    if (index) {
-      label = index === currentTurn ? `Current turn #${index}: ${turn}` : `Go to turn #${index}: ${turn}`;
-    }
-
-    return (
-      <li key={index}>
-        <button className={className} onClick={() => setCurrentTurn(index)}>{label}</button>
-      </li>
-    )
-  }), [currentTurn, history]);
-
   return (
     <div className="game">
       <div className="game-board">
-        <Board board={history[currentTurn]?.board} currentTurn={currentTurn} takeTurn={takeTurn} />
+        <Board
+          board={cloneDeep(history[currentTurn].board)}
+          currentTurn={currentTurn}
+          takeTurn={takeTurn}
+        />
+        <GridSizeSelect
+          defaultValue={gameConstants.defaultGridSize}
+          setGridSize={setGridSize}
+        />
       </div>
-      <div className="game-info">
-        <ul>{historyList}</ul>
-      </div>
+      <History
+        currentTurn={currentTurn}
+        gridSize={gridSize}
+        history={history}
+        setCurrentTurn={setCurrentTurn}
+      />
     </div>
   )
 }

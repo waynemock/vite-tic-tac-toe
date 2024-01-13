@@ -1,0 +1,7 @@
+
+.gridSizeSelect {
+  display: flex;
+  gap: 0.5em;
+  justify-content: center;
+  padding-top: 0.75em;
+}
